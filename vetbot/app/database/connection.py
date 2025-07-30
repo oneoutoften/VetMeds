@@ -1,12 +1,13 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config import config
-from typing import AsyncGenerator
+from contextlib import asynccontextmanager
 import logging
 
 logger = logging.getLogger(__name__)
 
 Base = declarative_base()
+
 
 class Database:
     def __init__(self):
@@ -25,23 +26,25 @@ class Database:
             self.async_session = sessionmaker(
                 bind=self.engine,
                 class_=AsyncSession,
-                expire_on_commit=False
+                expire_on_commit=False,
+                future=True
             )
             logger.info('Database connection established')
         except Exception as e:
             logger.critical(f"Database connection failed: {str(e)}")
             raise
 
-    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+    @asynccontextmanager
+    async def get_session(self) -> AsyncSession:
         if not self.async_session:
             await self.connect()
+
         async with self.async_session() as session:
             try:
                 yield session
                 await session.commit()
-            except Exception as e:
+            except Exception:
                 await session.rollback()
-                logger.error(f"Database error: {str(e)}")
                 raise
             finally:
                 await session.close()
@@ -50,5 +53,6 @@ class Database:
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info('Database tables created')
+
 
 database = Database()
