@@ -11,7 +11,7 @@ def parse_text(text:str) -> List[Drug]:
         drug_data = {
             'name':'',
             'active_ingredients':'',
-            'analogs':[],
+            'analogs':'',
             'dosages':'',
             'description':'',
             'notes':''
