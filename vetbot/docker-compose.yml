@@ -1,15 +1,18 @@
 services:
-  bot:
+  vet_bot:
     build: .
     container_name: vet_drugs_bot
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://vet_user:vetpass123@db:5432/vet_drugs_db
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DATABASE_URL=postgresql+asyncpg://vet_user:vetpass123@db:5432/vet_drugs_db
     volumes:
       - .:/app
     restart: unless-stopped
+    networks:
+      - vet_network
 
   db:
     image: postgres:15
@@ -20,13 +23,18 @@ services:
       POSTGRES_DB: vet_drugs_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ./postgres_logs:/var/log/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vet_user -d vet_drugs_db"]
+      test: ["CMD-SHELL", "pg_isready -q -U vet_user -d vet_drugs_db"]
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - vet_network
 
 volumes:
   postgres_data:
+
+networks:
+  vet_network:
+    driver: bridge
