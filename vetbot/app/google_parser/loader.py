@@ -5,6 +5,7 @@ from app.google_parser.schemas import Drug
 async def load_to_db(session: AsyncSession, drugs: list[Drug]):
     db_drugs = [
         DrugModel(
+
         name=drug.name,
         active_ingredients=drug.active_ingredients,
         analogs=drug.analogs,

@@ -2,11 +2,12 @@ from dataclasses import dataclass
 from typing import List, Optional
 from app.google_parser.schemas import Drug
 from app.google_parser.google_docs import GoogleDocsReader
+from config import config
 
 
 async def parse_google_doc(document_id: str) -> List[Drug]:
     reader = GoogleDocsReader()
-    text = await reader.get_text(document_id)
+    text = reader.get_text(document_id)
     return parse_text(text)
 
 def parse_text(text:str) -> List[Drug]:
