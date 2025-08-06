@@ -19,7 +19,7 @@ async def test_search():
     searcher = DrugSearch(database)
 
     try:
-        await print_search_results(searcher, 'адреналин')
+        await print_search_results(searcher, 'тест')
     except Exception as e:
         print(f'Error {e}')
     finally:

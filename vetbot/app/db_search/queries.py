@@ -22,7 +22,7 @@ class DrugSearch:
         async with self.db.get_session() as session:
             query = (
                 select(Drug)
-                .where(Drug.name.ilike(bindparam("name", f"%{analog}%")))
+                .where(Drug.analogs.ilike(bindparam("name", f"%{analog}%")))
                 .limit(limit)
             )
 
@@ -33,7 +33,7 @@ class DrugSearch:
         async with self.db.get_session() as session:
             query = (
                 select(Drug)
-                .where(Drug.name.ilike(bindparam("name", f"%{active_ingredient}%")))
+                .where(Drug.active_ingredients.ilike(bindparam("name", f"%{active_ingredient}%")))
                 .limit(limit)
             )
 
