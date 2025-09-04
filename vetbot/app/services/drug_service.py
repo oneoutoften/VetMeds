@@ -14,7 +14,7 @@ class DrugService:
         if not drugs:
             return 'Препарат не найден. Попробуйте другой запрос.'
 
-        response = ''
+        response = []
         for drug in drugs:
             drug_info = f"💊 <b>{drug.name}</b>\n\n"
 
@@ -29,6 +29,7 @@ class DrugService:
             if drug.notes:
                 drug_info += f"<b>Примечания:</b>\n{drug.notes}\n"
             response.append(drug_info)
-        return response
+
+        return response[0]
 
 drug_service = DrugService()

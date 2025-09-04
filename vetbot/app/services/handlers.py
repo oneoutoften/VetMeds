@@ -2,6 +2,11 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 from app.services.drug_service import drug_service
+import logging
+import traceback
+
+
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -27,6 +32,9 @@ async def handle_drug_search(message: Message):
         response = await drug_service.format_drug_response(drugs)
         await message.answer(response, parse_mode='HTML')
     except Exception as e:
+        logger.error(f"Error in drug search: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        print(e)
         await message.answer('Произошла ошибка при поиске. Попробуйте позже.')
 
     await status_msg.delete()

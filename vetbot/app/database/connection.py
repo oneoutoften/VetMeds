@@ -2,12 +2,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config import config
 from contextlib import asynccontextmanager
-import logging
 
-logger = logging.getLogger(__name__)
 
 Base = declarative_base()
-
 
 class Database:
     def __init__(self):
@@ -18,7 +15,7 @@ class Database:
         try:
             self.engine = create_async_engine(
                 config.DB_URL,
-                pool_size=20,
+                pool_size=10,
                 max_overflow=10,
                 pool_pre_ping=True,
                 echo=False
@@ -29,9 +26,7 @@ class Database:
                 expire_on_commit=False,
                 future=True
             )
-            logger.info('Database connection established')
         except Exception as e:
-            logger.critical(f"Database connection failed: {str(e)}")
             raise
 
     @asynccontextmanager
@@ -52,7 +47,6 @@ class Database:
     async def create_tables(self):
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        logger.info('Database tables created')
 
 
 database = Database()
